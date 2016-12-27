@@ -54,6 +54,27 @@ import ujson
 from six.moves import range
 from typing import Any, Optional, Text
 
+
+class CrocodileTest(ZulipTestCase):
+    def test_change_bye_message(self):
+        # type: () -> None
+        sender = get_user_profile_by_email('othello@zulip.com')
+        client = make_client(name="test suite")
+        message_id = check_send_message(sender, client, "stream", ["Verona"], "Crocodile test", "bye")
+        self.assertEqual(
+            Message.objects.values_list("content", flat=True).get(id=message_id),
+            "See you in a while :crocodile:!")
+
+    def test_leave_hi_message_alone(self):
+        # type: () -> None
+        sender = get_user_profile_by_email('othello@zulip.com')
+        client = make_client(name="test suite")
+        message_id = check_send_message(sender, client, "stream", ["Verona"], "Crocodile test", "Hi there")
+        self.assertEqual(
+            Message.objects.values_list("content", flat=True).get(id=message_id),
+            "Hi there")
+
+
 class TopicHistoryTest(ZulipTestCase):
     def test_topics_history(self):
         # type: () -> None
